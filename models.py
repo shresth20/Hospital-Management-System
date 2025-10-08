@@ -4,6 +4,8 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+
+
 # department db schema
 class Department(db.Model):
     __tablename__='departments'
@@ -47,6 +49,8 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return f'User {self.first_name}{self.last_name}({self.role})'
     
+
+
 # appointment db schema
 class Appointment(db.Model):
     __tablename__ = 'appointments'
@@ -72,6 +76,8 @@ class Appointment(db.Model):
     def __repr__(self):
         return f"<Appointment {self.id} on {self.appointment_datetime} with Dr. {self.doctor.last_name}>"
     
+
+
 # treatment db schema
 class Treatment(db.Model):
     __tablename__ = 'treatments'
