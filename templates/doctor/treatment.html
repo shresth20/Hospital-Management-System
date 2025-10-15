@@ -1,0 +1,20 @@
+<h1>Treatment Form</h1>
+
+<h3 class="mb-3">Add Treatment - {{ appointment.patient.name }}</h3>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Diagnosis <span class="text-danger">*</span></label>
+        <textarea name="diagnosis" class="form-control" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Prescription</label>
+        <textarea name="prescription" class="form-control"></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Notes</label>
+        <textarea name="notes" class="form-control"></textarea>
+    </div>
+    <button class="btn btn-success">Save Treatment</button>
+    <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>

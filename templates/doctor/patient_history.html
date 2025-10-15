@@ -1,0 +1,16 @@
+<h2 class="mb-4">Medical History - {{ patient.name }}</h2>
+
+{% if history %}
+{% for appt in history %}
+<div class="card mb-3 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title">{{ appt.treatment.diagnosis }}</h5>
+        <p class="mb-1"><strong>Date:</strong> {{ appt.appointment_datetime.strftime('%d-%b-%Y %I:%M %p') }}</p>
+        <p><strong>Prescription:</strong> {{ appt.treatment.prescription or 'N/A' }}</p>
+        <p><strong>Notes:</strong> {{ appt.treatment.notes or 'None' }}</p>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<p class="text-muted">No past records found.</p>
+{% endif %}

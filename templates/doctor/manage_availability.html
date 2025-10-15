@@ -1,0 +1,50 @@
+<h1>Treatment Form</h1>
+<h3 class="mb-3">Manage Availability</h3>
+
+<form method="POST" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label">Date</label>
+        <input type="date" name="available_date" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">Start Time</label>
+        <input type="time" name="start_time" class="form-control" required>
+    </div>
+    <div class="col-md-3">
+        <label class="form-label">End Time</label>
+        <input type="time" name="end_time" class="form-control" required>
+    </div>
+    <div class="col-md-2 d-flex align-items-end">
+        <button class="btn btn-primary w-100">Add</button>
+    </div>
+</form>
+
+<h5>Next 7 Days Availability</h5>
+{% if slots %}
+<table class="table table-hover table-bordered">
+    <thead class="table-success">
+        <tr>
+            <th>Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in slots %}
+        <tr>
+            <td>{{ s.available_date.strftime('%d-%b-%Y') }}</td>
+            <td>{{ s.start_time.strftime('%I:%M %p') }}</td>
+            <td>{{ s.end_time.strftime('%I:%M %p') }}</td>
+            <td>
+                <form method="POST" action="{{ url_for('doctor.delete_slot', id=s.id) }}">
+                    <button class="btn btn-sm btn-outline-danger">🗑 Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p class="text-muted">No availability slots found.</p>
+{% endif %}

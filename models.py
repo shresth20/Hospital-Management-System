@@ -50,6 +50,22 @@ class User(UserMixin, db.Model):
         return f'User {self.first_name}{self.last_name}({self.role})'
     
 
+# doctor availability
+class DoctorAvailability(db.Model):
+    __tablename__ = 'doctor_availability'
+
+    id = db.Column(db.Integer, primary_key=True)
+    doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    available_date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    
+    # Relationship to the User model
+    doctor = db.relationship('User', backref=db.backref('availabilities', lazy=True, cascade="all, delete-orphan"))
+
+    def __repr__(self):
+        return f"<Availability for Dr. ID {self.doctor_id} on {self.available_date} from {self.start_time} to {self.end_time}>"
+
 
 # appointment db schema
 class Appointment(db.Model):
@@ -59,7 +75,7 @@ class Appointment(db.Model):
     # for patient
     patient_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     patient = db.relationship('User', foreign_keys=[patient_id], back_populates='patient_appointments')
-    appointment_datatime = db.Column(db.DateTime, nullable=False)
+    appointment_datetime = db.Column(db.DateTime, nullable=False)
     reason = db.Column(db.Text)
     
     # status- Booked, Completed, Cancelled

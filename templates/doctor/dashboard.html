@@ -1,1 +1,41 @@
 <h1>Doctor Dashboard</h1>
+
+<h2 class="mb-3">Upcoming Appointments</h2>
+
+{% if appointments %}
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>Date & Time</th>
+                <th>Patient</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appt in appointments %}
+            <tr>
+                <td>{{ appt.appointment_datetime.strftime('%d-%b-%Y %I:%M %p') }}</td>
+                <td>{{ appt.patient.name }}</td>
+                <td>{{ appt.status }}</td>
+                <td>
+                    <form action="{{ url_for('doctor.update_status', id=appt.id) }}" method="POST" class="d-inline">
+                        <select name="status" class="form-select form-select-sm d-inline w-auto">
+                            <option selected disabled>Update</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                        <button class="btn btn-sm btn-outline-success">✔</button>
+                    </form>
+                    <a href="{{ url_for('doctor.treat_patient', id=appt.id) }}"
+                        class="btn btn-sm btn-outline-primary">Add Treatment</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="text-muted">No upcoming appointments.</p>
+{% endif %}
