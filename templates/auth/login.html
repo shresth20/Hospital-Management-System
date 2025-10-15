@@ -11,7 +11,7 @@
     <div>
         <h2>Login Page</h2>
         <p>Please enter your details to access your account.</p>
-        <form action="{{url_for('login')}}" method="post">
+        <form action="{{url_for('auth.login')}}" method="post">
             <div>
                 <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" required>
@@ -23,7 +23,7 @@
             <button type="submit">Login</button>
         </form>
         <div>
-            <p>Don't have an account? <a href="{{ url_for('register') }}">Register here</a></p>
+            <p>Don't have an Patient account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
         </div>
 </body>
 

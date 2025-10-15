@@ -1,7 +1,12 @@
-
 <h1>Home Page</h1>
-<a href="{{ url_for('login') }}">Login</a>
-<a href="{{ url_for('register') }}">Register</a>
-<a href="{{ url_for('admin.dashboard') }}">Admin</a>
-<a href="{{ url_for('doctor.dashboard') }}">Doctor</a>
+<h3>Authentication</h3>
+<a href="{{ url_for('auth.login') }}">Login</a><br>
+<a href="{{ url_for('auth.register') }}">Register</a>
+<h3>Dashboard</h3>
+<a href="{{ url_for('admin.dashboard') }}">Admin</a><br>
+<a href="{{ url_for('doctor.dashboard') }}">Doctor</a><br>
 <a href="{{ url_for('patient.dashboard') }}">Patient</a>
+
+<div>
+    <p>Logout: <a href="{{ url_for('auth.logout') }}">Logout here</a></p>
+</div>

@@ -28,7 +28,7 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(200), nullable=False)
     first_name = db.Column(db.String(100), nullable=False)
     last_name = db.Column(db.String(100), nullable=False)
-    creted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # role - admin, doctor, patient
     role = db.Column(db.String(20), nullable=False)

@@ -1,0 +1,59 @@
+<h1>Patients Data</h1>
+
+<div class="">
+    <h2>Search Patients</h2>
+    <form method="get" action="{{ url_for('admin.search_patients') }}">
+        <input type="text" name="search" placeholder="Search by name or email" value="{{ query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    {% if results %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in results %}
+            <tr>
+                <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                <td>{{ patient.email }}</td>
+                <td>{{ patient.contact_number }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No patients found.</p>
+    {% endif %}
+
+    <h2>All Patients</h2>
+    <table border="solid">
+        <thead>
+            <tr>
+                <th>Patient Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Registered at</th>
+                <th>Operation</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patients %}
+            <tr>
+                <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                <td>{{ patient.email }}</td>
+                <td>{{ patient.contact_number }}</td>
+                <td>{{ patient.created_at }}</td>
+                <td>
+                    <a href="{{ url_for('admin.update_patient', id=patient.id) }}">Update</a>
+                    <a href="{{ url_for('admin.delete_patient', id=patient.id) }}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

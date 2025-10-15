@@ -1,3 +1,23 @@
 <h1>Admin Dashboard</h1>
 
-<a href="{{url_for('admin.register_doctor')}}">Register New Doctor</a>
+<a href="{{url_for('admin.view_patients')}}">View Patients</a><br>
+<a href="{{url_for('admin.view_doctors')}}">View Doctors</a><br>
+<a href="{{url_for('admin.register_doctor')}}">Register New Doctor</a><br>
+<a href="{{url_for('admin.view_appointments')}}">View Appointments</a>
+<br>
+<table>
+    <thead>
+        <tr>
+            <th>Total Doctors</th>
+            <th>Total Patients</th>
+            <th>Total Appointments</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{total_doctors}}</td>
+            <td>{{total_patients}}</td>
+            <td>{{total_appointments}}</td>
+        </tr>
+    </tbody>
+</table>

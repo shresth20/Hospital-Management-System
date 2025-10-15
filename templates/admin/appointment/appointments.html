@@ -1,0 +1,30 @@
+<h1>Appointments Data</h1>
+
+    <h2>Appointments Table</h2>
+    <table border="solid">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Appointment datatime</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Doctor</th>
+                <th>Patient</th>
+                <th>Treatment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.id }}</td>
+                <td>{{ appointment.appointment_datatime }}</td>
+                <td>{{ appointment.reason }}</td>
+                <td>{{ appointment.created_at }}</td>
+                <td>{{ appointment.status }}</td>
+                <td>{{ appointment.doctor }}</td>
+                <td>{{ appointment.patient }}</td>
+                <td>{{ appointment.treatment }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>

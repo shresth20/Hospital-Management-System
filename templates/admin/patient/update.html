@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient</title>
+    <title>Update</title>
 </head>
 
 <body>
     <div>
-        <h2>Create an Account</h2>
+        <h2>Register New Doctor</h2>
         <p>Join us to manage your health with ease.</p>
-        <form action="{{url_for('auth.register')}}" method="post">
+        <form action="{{url_for('admin.register_doctor')}}" method="post">
             <div>
                 <label for="first_name">First Name</label>
                 <input type="text" id="first_name" name="first_name" required>
@@ -31,8 +31,9 @@
             <button type="submit">Create Account</button>
         </form>
         <div>
-            <p>Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a></p>
+            <p><a href="{{ url_for('admin.dashboard') }}">Back to Dashborad </a></p>
         </div>
+    </div>
 </body>
 
 </html>
