@@ -1,0 +1,16 @@
+<h1>Find Doctors</h1>
+
+<form method="GET">
+  <input type="text" name="search" placeholder="Search by name or specialization" value="{{ query }}">
+  <button type="submit">Search</button>
+</form>
+
+<ul>
+  {% for doc in doctors %}
+    <li>Dr. {{ doc.first_name }} {{ doc.last_name }} - {{ doc.qualification.name }}
+      <a href="{{ url_for('patient.book_appointment', doctor_id=doc.id) }}">Book</a>
+    </li>
+  {% else %}
+    <li>No doctors found.</li>
+  {% endfor %}
+</ul>

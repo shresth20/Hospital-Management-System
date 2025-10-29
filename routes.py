@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from flask import Blueprint, url_for, render_template, redirect, request, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
@@ -393,7 +394,7 @@ def treatment(id):
         flash('Treatment saved. Appointment completed.', 'success')
         return redirect(url_for('doctor.dashboard'))
 
-    return render_template('treatment.html', appointment=appointment)
+    return render_template('doctor/treatment.html', appointment=appointment)
 
 # patient history
 
@@ -478,10 +479,184 @@ def delete_slot(id):
 
 # -------------------PATIENT ROURTES-------------------------------------------------
 
-
+# patient dashbaord
 @patient.route('/')
 @login_required
 def dashboard():
     check_user_role('patient')
+    upcoming = Appointment.query.filter(
+        Appointment.patient_id == current_user.id,
+        Appointment.status == 'Booked',
+        Appointment.appointment_datetime >= datetime.now()
+    ).order_by(Appointment.appointment_datetime.asc()).all()
 
-    return render_template('patient/dashboard.html')
+    past = Appointment.query.filter(
+        Appointment.patient_id == current_user.id,
+        Appointment.status.in_(['Completed', 'Cancelled'])
+    ).order_by(Appointment.appointment_datetime.desc()).all()
+
+    return render_template('patient/dashboard.html', upcoming=upcoming, past=past)
+
+# find doctor
+
+
+@patient.route('/find_doctors')
+@login_required
+def find_doctors():
+    query = request.args.get('search', '').strip()
+
+    if query:
+        filtered_doctors = User.query.filter(
+            User.role == 'doctor',
+            (
+                func.concat(User.first_name, ' ', User.last_name).ilike(f"%{query}%") |
+                User.qualification.ilike(f"%{query}%")
+            )
+        ).all()
+        print(filtered_doctors)
+    else:
+        filtered_doctors = User.query.filter_by(role='doctor').all()
+
+    return render_template('patient/find_doctors.html', doctors=filtered_doctors, query=query)
+
+# book appointment
+
+
+@patient.route('/book_appointment/<int:doctor_id>', methods=['GET', 'POST'])
+@login_required
+def book_appointment(doctor_id):
+    if current_user.role != 'patient':
+        flash('Only patients can book appointments.', 'error')
+        return redirect(url_for('home'))
+
+    doctor = User.query.filter_by(id=doctor_id, role='doctor').first_or_404()
+
+    if request.method == 'POST':
+        try:
+            appointment_datetime = datetime.fromisoformat(
+                request.form['appointment_datetime'])
+            reason = request.form['reason']
+
+            # Create new appointment
+            new_appointment = Appointment(
+                patient_id=current_user.id,
+                doctor_id=doctor_id,
+                appointment_datetime=appointment_datetime,
+                reason=reason,
+                status='Booked',
+                created_at=datetime.utcnow()
+            )
+
+            db.session.add(new_appointment)
+            db.session.commit()
+
+            flash('Appointment booked successfully!', 'success')
+            return redirect(url_for('patient.dashboard'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error booking appointment: {str(e)}', 'error')
+            return redirect(url_for('patient.book_appointment', doctor_id=doctor_id))
+
+    # For GET request, show available slots
+    available_slots = {}
+    today = date.today()
+
+    # Show slots for next 7 days
+    for i in range(7):
+        day = today + timedelta(days=i)
+        slots = []
+
+        # Create slots from 9 AM to 5 PM
+        start_time = datetime.combine(day, datetime.min.time().replace(hour=9))
+        end_time = datetime.combine(day, datetime.min.time().replace(hour=17))
+
+        current_slot = start_time
+        while current_slot < end_time:
+            # Check if slot is already booked
+            existing_appointment = Appointment.query.filter_by(
+                doctor_id=doctor_id,
+                appointment_datetime=current_slot,
+                status='Booked'
+            ).first()
+
+            if not existing_appointment:
+                slots.append(current_slot)
+
+            current_slot += timedelta(minutes=30)  # 30-minute slots
+
+        if slots:  # Only add days that have available slots
+            available_slots[day] = slots
+
+    return render_template('patient/appointment.html',
+                           doctor=doctor,
+                           available_slots=available_slots)
+
+# cancel appointment
+
+
+@patient.route('/appointment/cancel/<int:id>', methods=['POST'])
+@login_required
+def cancel_appointment(id):
+    check_user_role('patient')
+
+    appt = Appointment.query.get_or_404(id)
+    if appt.status != 'Booked':
+        flash('Cannot cancel this appointment.', 'warning')
+        return redirect(url_for('patient.dashboard'))
+
+    appt.status = 'Cancelled'
+    db.session.commit()
+    flash('Appointment cancelled successfully.', 'success')
+    return redirect(url_for('patient.dashboard'))
+
+# view treatment
+
+
+@patient.route('/treatment/<int:id>')
+@login_required
+def view_treatment(id):
+    check_user_role('patient')
+    appt = Appointment.query.get_or_404(id)
+    if not appt.treatment:
+        flash('No treatment found.', 'danger')
+        return redirect(url_for('patient.dashboard'))
+    return render_template('patient/treatment.html', appointment=appt)
+
+# view/update profile
+
+
+@patient.route('/profile', methods=['GET', 'POST'])
+@login_required
+def update_profile():
+    if current_user.role != 'patient':
+        flash('Access denied.', 'error')
+        return redirect(url_for('home'))
+
+    if request.method == 'POST':
+        try:
+            user = User.query.get(current_user.id)
+
+            user.first_name = request.form.get('first_name')
+            user.last_name = request.form.get('last_name')
+            user.email = request.form.get('email')
+            user.contact_number = request.form.get('contact_number')
+            user.gender = request.form.get('gender')
+            user.address = request.form.get('address')
+            dob_str = request.form.get('dob')
+            if dob_str:
+                try:
+                    user.dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+                except ValueError:
+                    flash('Invalid date format', 'error')
+                    return redirect(url_for('patient.update_profile'))
+
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            return redirect(url_for('patient.update_profile'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating profile: {e}', 'error')
+
+    return render_template('patient/profile.html')

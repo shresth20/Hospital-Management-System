@@ -1,0 +1,6 @@
+<h2>Treatment Details</h2>
+
+<p><strong>Date:</strong> {{ appointment.appointment_datetime.strftime('%d %B %Y, %I:%M %p') }}</p>
+<p><strong>Doctor:</strong> Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</p>
+<p><strong>Notes:</strong> {{ appointment.treatment.notes }}</p>
+<p><strong>Prescription:</strong> {{ appointment.treatment.prescription }}</p>
