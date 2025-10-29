@@ -347,6 +347,7 @@ def update_status(id):
     appointment = Appointment.query.get_or_404(id)
     if appointment.doctor_id != current_user.id:
         flash('Not authorized.', 'danger')
+        
     else:
         status = request.form.get('status')
         if status in ['Completed', 'Cancelled']:
@@ -370,6 +371,7 @@ def treatment(id):
     if appointment.doctor_id != current_user.id:
         flash('Not authorized.', 'danger')
         return redirect(url_for('doctor.dashboard'))
+    
     if appointment.status != 'Booked':
         flash('Can only treat booked appointments.', 'warning')
         return redirect(url_for('doctor.dashboard'))
@@ -617,7 +619,13 @@ def cancel_appointment(id):
 @login_required
 def view_treatment(id):
     check_user_role('patient')
+
     appt = Appointment.query.get_or_404(id)
+    
+    if appt.patient_id != current_user.id:
+        flash('You are not authorized to view this...', 'danger')
+        return redirect(url_for('patient.dashboard'))
+
     if not appt.treatment:
         flash('No treatment found.', 'danger')
         return redirect(url_for('patient.dashboard'))
