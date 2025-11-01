@@ -7,6 +7,7 @@ from routes.auth import auth, bcrypt
 from routes.admin import admin
 from routes.doctor import doctor
 from routes.patient import patient
+from routes.restapi import api_bp
 
 
 login_manager = LoginManager()
@@ -34,7 +35,8 @@ def create_app():
     app.register_blueprint(doctor, url_prefix='/doctor')
     app.register_blueprint(patient, url_prefix='/patient')
 
-
+    # restful
+    app.register_blueprint(api_bp, url_prefix='/api')
 
 
 
