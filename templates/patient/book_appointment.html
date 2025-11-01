@@ -1,0 +1,23 @@
+<h2>Book Appointment with Dr. {{ doctor.name }}</h2>
+
+<form method="POST">
+  <label for="appointment_datetime">Select Date & Time:</label>
+  <select name="appointment_datetime" class="form-select" required>
+    {% for date, slots in available_slots.items() %}
+      <optgroup label="{{ date.strftime('%A, %d %B %Y') }}">
+        {% for slot in slots %}
+          <option value="{{ slot.isoformat() }}">
+            {{ slot.strftime('%I:%M %p') }}
+          </option>
+        {% endfor %}
+      </optgroup>
+    {% endfor %}
+  </select>
+
+  <div class="mt-3">
+    <label>Reason for Visit:</label>
+    <textarea name="reason" class="form-control" required></textarea>
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-3">Book Appointment</button>
+</form>

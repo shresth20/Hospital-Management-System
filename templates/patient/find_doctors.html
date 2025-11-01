@@ -6,9 +6,9 @@
 </form>
 
 <ul>
-  {% for doc in doctors %}
-    <li>Dr. {{ doc.first_name }} {{ doc.last_name }} - {{ doc.qualification.name }}
-      <a href="{{ url_for('patient.book_appointment', doctor_id=doc.id) }}">Book</a>
+  {% for doctor in doctors %}
+    <li>Dr. {{ doctor.first_name }} {{ doctor.last_name }}, {{ doctor.qualification }}, Specialist of {{doctor.specialization.name}}({{doctor.specialization.description}})
+      <a href="{{ url_for('patient.book_appointment', doctor_id=doctor.id) }}">Book</a>
     </li>
   {% else %}
     <li>No doctors found.</li>

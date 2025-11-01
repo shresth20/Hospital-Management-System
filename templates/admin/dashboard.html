@@ -5,19 +5,47 @@
 <a href="{{url_for('admin.register_doctor')}}">Register New Doctor</a><br>
 <a href="{{url_for('admin.view_appointments')}}">View Appointments</a>
 <br>
-<table>
-    <thead>
-        <tr>
-            <th>Total Doctors</th>
-            <th>Total Patients</th>
-            <th>Total Appointments</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{total_doctors}}</td>
-            <td>{{total_patients}}</td>
-            <td>{{total_appointments}}</td>
-        </tr>
-    </tbody>
-</table>
+
+<h2>Dashboard Statistics</h2>
+
+<div class="charts-container">
+    <div>{{ chart_overview|safe }}</div>
+    <div>{{ chart_status_pie|safe }}</div>
+    <div>{{ chart_age_hist|safe }}</div>
+</div>
+
+
+<div class="container mt-5">
+  <h2 class="text-center mb-4">Admin Dashboard</h2>
+
+  <div class="row text-center mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5>Total Doctors</h5>
+        <h3>{{ total_doctors }}</h3>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm p-3">
+        <h5>Total Patients</h5>
+        <h3>{{ total_patients }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-4 text-center">
+      <h5>Appointment Status</h5>
+      <img src="data:image/png;base64,{{ appointment_chart }}" class="img-fluid shadow-sm rounded">
+    </div>
+    <div class="col-md-4 text-center">
+      <h5>Patient Age Distribution</h5>
+      <img src="data:image/png;base64,{{ age_chart }}" class="img-fluid shadow-sm rounded">
+    </div>
+    <div class="col-md-4 text-center">
+      <h5>Doctors per Specialization</h5>
+      <img src="data:image/png;base64,{{ spec_chart }}" class="img-fluid shadow-sm rounded">
+    </div>
+  </div>
+</div>
+

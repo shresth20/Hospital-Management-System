@@ -1,8 +1,13 @@
 from flask import Flask, render_template, url_for
 from flask_login import LoginManager
+
 from models import db, User
-from routes import bcrypt, auth, admin, doctor, patient
-from sqlalchemy import text
+
+from routes.auth import auth, bcrypt
+from routes.admin import admin
+from routes.doctor import doctor
+from routes.patient import patient
+
 
 login_manager = LoginManager()
 
@@ -29,15 +34,18 @@ def create_app():
     app.register_blueprint(doctor, url_prefix='/doctor')
     app.register_blueprint(patient, url_prefix='/patient')
 
+
+
+
+
     # create tables if they don't exist
     with app.app_context():  
         db.create_all()
-        # print('Database Created Successfully !!')
+        print('Database Created Successfully !!')
 
     return app
 
 app = create_app()
-
 
 # Home for all users
 @app.route('/')

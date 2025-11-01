@@ -1,4 +1,10 @@
 <h1>Doctor Dashboard</h1>
+<div class="mb-3">
+    <h3>Welcome Dr. {{current_user.first_name}} {{current_user.last_name}}, specialization in
+        {{current_user.specialization.name}}</h3>
+</div>
+
+
 
 <h2 class="mb-3">Upcoming Appointments</h2>
 
@@ -11,26 +17,29 @@
                 <th>Patient</th>
                 <th>Status</th>
                 <th>Actions</th>
+                <th>Patinet History</th>
             </tr>
         </thead>
         <tbody>
             {% for appt in appointments %}
             <tr>
                 <td>{{ appt.appointment_datetime.strftime('%d-%b-%Y %I:%M %p') }}</td>
-                <td>{{ appt.patient.name }}</td>
+                <td>{{ appt.patient.first_name }}</td>
                 <td>{{ appt.status }}</td>
                 <td>
                     <form action="{{ url_for('doctor.update_status', id=appt.id) }}" method="POST" class="d-inline">
-                        <select name="status" class="form-select form-select-sm d-inline w-auto">
+                        <select name="status" class="">
                             <option selected disabled>Update</option>
                             <option value="Completed">Completed</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
-                        <button class="btn btn-sm btn-outline-success">✔</button>
+                        <button class="">✔</button>
                     </form>
-                    <a href="{{ url_for('doctor.treatment', id=appt.id) }}"
-                        class="btn btn-sm btn-outline-primary">Add Treatment</a>
+                    <a href="{{ url_for('doctor.treatment', id=appt.id) }}" class="">Add Treatment</a>
                 </td>
+                <td> <a href="{{ url_for('doctor.patient_history', id=appt.patient.id) }}" class="">Patient History</a>
+                </td>
+
             </tr>
             {% endfor %}
         </tbody>
@@ -39,3 +48,42 @@
 {% else %}
 <p class="text-muted">No upcoming appointments.</p>
 {% endif %}
+
+
+<nav>
+    <a href="{{ url_for('doctor.availability') }}">Manage Availability</a><br>
+    <a href="{{ url_for('auth.logout') }}">Logout</a>
+</nav>
+
+
+<h2 class="mb-3">Past Appointments</h2>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead class="table-primary">
+            <tr>
+                <th>Date & Time</th>
+                <th>Patient</th>
+                <th>Status</th>
+                <th>Patinet History</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appt in past_appointments %}
+            <tr>
+                <td>{{ appt.appointment_datetime.strftime('%d-%b-%Y %I:%M %p') }}</td>
+                <td>{{ appt.patient.first_name }}</td>
+                <td>{{ appt.status }}</td>
+
+                <td> <a href="{{ url_for('doctor.patient_history', id=appt.patient.id) }}" class="">Patient History</a>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<h2>Dashboard Statistics</h2>
+
+<img src="data:image/png;base64,{{ chart }}" class="img-fluid rounded shadow-sm">

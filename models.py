@@ -56,15 +56,17 @@ class DoctorAvailability(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     doctor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    available_date = db.Column(db.Date, nullable=False)
-    start_time = db.Column(db.Time, nullable=False)
-    end_time = db.Column(db.Time, nullable=False)
-    
-    # Relationship to the User model
-    doctor = db.relationship('User', backref=db.backref('availabilities', lazy=True, cascade="all, delete-orphan"))
+    available_date = db.Column(db.Date, nullable=False)  # actual date (YYYY-MM-DD)
+    start_time = db.Column(db.Time, nullable=False)      # e.g., 09:00
+    end_time = db.Column(db.Time, nullable=False)        # e.g., 17:00
+
+    doctor = db.relationship(
+        'User',
+        backref=db.backref('availabilities', lazy=True, cascade="all, delete-orphan")
+    )
 
     def __repr__(self):
-        return f"<Availability for Dr. ID {self.doctor_id} on {self.available_date} from {self.start_time} to {self.end_time}>"
+        return f"<Availability Dr.{self.doctor_id} {self.available_date} {self.start_time}-{self.end_time}>"
 
 
 # appointment db schema
