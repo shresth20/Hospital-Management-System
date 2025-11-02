@@ -2,6 +2,7 @@ from flask import Blueprint, url_for, render_template, redirect, request, flash
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from datetime import date, timedelta, datetime
+import math
 
 from routes.auth import check_user_role
 from models import db, User, Appointment, DoctorAvailability
@@ -34,12 +35,29 @@ def dashboard():
         if appt.status in counts:
             counts[appt.status] += 1
 
-    plt.figure(figsize=(4, 4))
-    plt.pie(counts.values(), labels=counts.keys(), autopct='%1.1f%%', startangle=90)
-    plt.title("Your Appointment Status Ratio")
-    chart = plot_to_img()
+    labels = list(counts.keys())
+    raw_values = list(counts.values())
+    values = []
+    for v in raw_values:
+        try:
+            fv = float(v)
+            if math.isnan(fv) or fv < 0:
+                fv = 0.0
+        except Exception:
+            fv = 0.0
+        values.append(fv)
+    total = sum(values)
 
-    return render_template('patient/dashboard.html', upcoming=upcoming, past=past, chart=chart)
+    plt.figure(figsize=(4, 4))
+    if total > 0:
+        plt.pie(values, labels=labels, autopct='%1.1f%%', startangle=90)
+    else:
+        # no valid data  render a neutral placeholder pie
+        plt.pie([1], labels=['No data'], colors=['#dddddd'])
+
+    pie_img = plot_to_img()
+
+    return render_template('patient/dashboard.html', upcoming=upcoming, past=past, chart=pie_img)
 
 # find doctor
 @patient.route('/find_doctors')

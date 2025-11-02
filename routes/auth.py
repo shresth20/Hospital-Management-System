@@ -1,6 +1,7 @@
 from flask import Blueprint, url_for, render_template, redirect, request, flash
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_bcrypt import Bcrypt
+from datetime import datetime
 
 from models import db, User
 
@@ -20,7 +21,7 @@ def check_user_role(role):
 # for all roles
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    # redirect on db if already logged in
+
     if current_user.is_authenticated:
         if current_user.role == 'admin':
             return redirect(url_for('admin.dashboard'))
@@ -56,32 +57,34 @@ def login():
 # create new patient
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
-    if request.method == "POST":
-        # create new patient and redirect to dashboard
+    if request.method == 'POST':
         email = request.form.get('email')
-        first_name = request.form.get('first_name')
-        last_name = request.form.get('last_name')
-        password = request.form.get('password')
-
-        # check if user already exists
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash('Email address already exists.', 'warning')
+        # check if patient email already exists
+        if User.query.filter_by(email=email).first():
+            flash('A user with this email already exists.', 'warning')
             return redirect(url_for('auth.register'))
 
         hashed_password = bcrypt.generate_password_hash(
-            password).decode('utf-8')
+            request.form.get('password')).decode('utf-8')
+        
+        dob_str = request.form.get('dob')
+        dob = datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None
+
         new_patient = User(
             email=email,
             password=hashed_password,
-            first_name=first_name,
-            last_name=last_name,
-            role='patient'
+            first_name=request.form.get('first_name'),
+            last_name=request.form.get('last_name'),
+            role='patient',
+            contact_number = request.form.get('contact_number'),
+            dob=dob,
+            gender = request.form.get('gender'),
+            address = request.form.get('address')
         )
         db.session.add(new_patient)
         db.session.commit()
 
-        flash('Your account has been created! You are now able to log in.', 'success')
+        flash('Your account has been created! You are now able to login.', 'success')
         return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html')

@@ -1,6 +1,7 @@
 from flask import Blueprint, url_for, render_template, redirect, request, flash
 from flask_login import login_required
 from sqlalchemy import func
+from datetime import datetime
 
 from routes.auth import bcrypt, check_user_role
 from models import db, User, Department, Appointment
@@ -11,23 +12,12 @@ import matplotlib.pyplot as plt
 
 admin = Blueprint('admin', __name__)
 
-# # admin dashboard
-# @admin.route('/')
-# @login_required
-# def dashboard():
-#     check_user_role('admin')
-#     total_doctors = User.query.filter_by(role='doctor').count()
-#     total_patients = User.query.filter_by(role='patient').count()
-#     total_appointments = Appointment.query.count()
-#     return render_template('admin/dashboard.html', total_doctors=total_doctors, total_patients=total_patients, total_appointments=total_appointments)
-
 
 @admin.route('/')
 @login_required
 def dashboard():
     check_user_role('admin')
 
-    # Appointment status count
     status_counts = (
         db.session.query(Appointment.status, db.func.count(Appointment.id))
         .group_by(Appointment.status)
@@ -57,7 +47,6 @@ def dashboard():
     plt.ylabel("Count")
     age_chart = plot_to_img()
 
-    # Doctor specialization count
     doctors = User.query.filter_by(role='doctor').all()
     spec_counts = {}
     for d in doctors:
@@ -86,6 +75,8 @@ def dashboard():
     )
 
 
+#-------------------DOCTOR--------------------------------------------------------------------------------------------------
+
 # doctor control
 @admin.route('/view_doctors')
 @login_required
@@ -110,12 +101,20 @@ def register_doctor():
 
         hashed_password = bcrypt.generate_password_hash(
             request.form.get('password')).decode('utf-8')
+        
+        dob_str = request.form.get('dob')
+        dob = datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None
+
         new_doctor = User(
             email=email,
             password=hashed_password,
             first_name=request.form.get('first_name'),
             last_name=request.form.get('last_name'),
             role='doctor',
+            contact_number = request.form.get('contact_number'),
+            dob=dob,
+            gender = request.form.get('gender'),
+            qualification = request.form.get('qualification'),
             specialization_id=request.form.get('specialization_id')
         )
         db.session.add(new_doctor)
@@ -128,7 +127,7 @@ def register_doctor():
 
 
 # update doctor
-@admin.route('/update_doctor/<int:id>')
+@admin.route('/update_doctor/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_doctor(id):
     check_user_role('admin')
@@ -138,15 +137,30 @@ def update_doctor(id):
         flash('Invalid User ID', 'danger')
         return redirect(url_for('admin.view_doctors'))
 
-    if request.method == 'post':
+
+    if request.method == 'POST':  
         doctor.first_name = request.form.get('first_name')
         doctor.last_name = request.form.get('last_name')
         doctor.email = request.form.get('email')
-        doctor.contact_number = request.form.get('contact_number')
+        doctor.contact_number = request.form.get('contact_number')       
+        doctor.gender = request.form.get('gender')
+        doctor.qualification = request.form.get('qualification')
         doctor.specialization_id = request.form.get('specialization_id')
-        doctor.session.commit()
-        flash('Doctor profile has updated successfully!', 'success')
-        return redirect(url_for(admin.view_doctors))
+
+        dob_str = request.form.get('dob')
+        if dob_str:
+            try:
+                doctor.dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+            except ValueError:
+                flash('Invalid date format. Please use YYYY-MM-DD', 'danger')
+                departments = Department.query.all()
+                return render_template('admin/doctor/update.html', doctor=doctor, departments=departments)
+        else:
+            doctor.dob = None
+
+        db.session.commit()  
+        flash('Doctor profile has been updated successfully!', 'success')
+        return redirect(url_for('admin.view_doctors')) 
 
     departments = Department.query.all()
     return render_template('admin/doctor/update.html', doctor=doctor, departments=departments)
@@ -191,16 +205,19 @@ def search_doctors():
 
     return render_template('admin/doctor/doctors.html', results=filtered_doctors, query=query)
 
+
+#-------------------PATIENT--------------------------------------------------------------------------------------------------
+
 # patient control
 @admin.route('/view_patients')
 @login_required
 def view_patients():
     check_user_role('admin')
-
-    return render_template('admin/patient/patients.html')
+    patients = User.query.filter_by(role='patient').all()
+    return render_template('admin/patient/patients.html', patients=patients)
 
 # update patient
-@admin.route('/update_patient/<int:id>')
+@admin.route('/update_patient/<int:id>', methods=['GET', 'POST'])  # Added methods=['GET', 'POST']
 @login_required
 def update_patient(id):
     check_user_role('admin')
@@ -215,12 +232,29 @@ def update_patient(id):
         patient.last_name = request.form.get('last_name')
         patient.email = request.form.get('email')
         patient.contact_number = request.form.get('contact_number')
+        patient.gender = request.form.get('gender')
         patient.address = request.form.get('address')
-        db.session.commit()
-        flash('Patient profile has been updated successfully!', 'success')
-        return redirect(url_for('admin.view_patients'))
 
-    return render_template('update_patient.html', patient=patient)
+        dob_str = request.form.get('dob')
+        if dob_str:
+            try:
+                patient.dob = datetime.strptime(dob_str, '%Y-%m-%d').date()
+            except ValueError:
+                flash('Invalid date format. Please use YYYY-MM-DD', 'danger')
+                return render_template('admin/patient/update.html', patient=patient)
+        else:
+            patient.dob = None
+
+        try:
+            db.session.commit()
+            flash('Patient profile has been updated successfully!', 'success')
+            return redirect(url_for('admin.view_patients'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating patient: {str(e)}', 'danger')
+            return render_template('admin/patient/update.html', patient=patient)
+
+    return render_template('admin/patient/update.html', patient=patient)
 
 # delete patient
 @admin.route('/delete_patient/<int:id>')
