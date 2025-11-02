@@ -4,8 +4,6 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-
-
 # department db schema
 class Department(db.Model):
     __tablename__='departments'

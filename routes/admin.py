@@ -52,7 +52,8 @@ def dashboard():
     for d in doctors:
         spec = getattr(d, 'specialization', None)
         # prefer a readable name for the specialization; fallback to "Unknown"
-        spec_name = spec.name if spec and hasattr(spec, 'name') else (str(spec) if spec else 'Unknown')
+        spec_name = spec.name if spec and hasattr(
+            spec, 'name') else (str(spec) if spec else 'Unknown')
         spec_counts[spec_name] = spec_counts.get(spec_name, 0) + 1
 
     labels = list(spec_counts.keys())
@@ -75,7 +76,7 @@ def dashboard():
     )
 
 
-#-------------------DOCTOR--------------------------------------------------------------------------------------------------
+# -------------------DOCTOR--------------------------------------------------------------------------------------------------
 
 # doctor control
 @admin.route('/view_doctors')
@@ -87,6 +88,8 @@ def view_doctors():
     return render_template('admin/doctor/doctors.html', doctors=doctors)
 
 # register doctor
+
+
 @admin.route('/register_doctor', methods=['GET', 'POST'])
 @login_required
 def register_doctor():
@@ -101,9 +104,10 @@ def register_doctor():
 
         hashed_password = bcrypt.generate_password_hash(
             request.form.get('password')).decode('utf-8')
-        
+
         dob_str = request.form.get('dob')
-        dob = datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None
+        dob = datetime.strptime(
+            dob_str, '%Y-%m-%d').date() if dob_str else None
 
         new_doctor = User(
             email=email,
@@ -111,10 +115,10 @@ def register_doctor():
             first_name=request.form.get('first_name'),
             last_name=request.form.get('last_name'),
             role='doctor',
-            contact_number = request.form.get('contact_number'),
+            contact_number=request.form.get('contact_number'),
             dob=dob,
-            gender = request.form.get('gender'),
-            qualification = request.form.get('qualification'),
+            gender=request.form.get('gender'),
+            qualification=request.form.get('qualification'),
             specialization_id=request.form.get('specialization_id')
         )
         db.session.add(new_doctor)
@@ -137,12 +141,11 @@ def update_doctor(id):
         flash('Invalid User ID', 'danger')
         return redirect(url_for('admin.view_doctors'))
 
-
-    if request.method == 'POST':  
+    if request.method == 'POST':
         doctor.first_name = request.form.get('first_name')
         doctor.last_name = request.form.get('last_name')
         doctor.email = request.form.get('email')
-        doctor.contact_number = request.form.get('contact_number')       
+        doctor.contact_number = request.form.get('contact_number')
         doctor.gender = request.form.get('gender')
         doctor.qualification = request.form.get('qualification')
         doctor.specialization_id = request.form.get('specialization_id')
@@ -158,9 +161,9 @@ def update_doctor(id):
         else:
             doctor.dob = None
 
-        db.session.commit()  
+        db.session.commit()
         flash('Doctor profile has been updated successfully!', 'success')
-        return redirect(url_for('admin.view_doctors')) 
+        return redirect(url_for('admin.view_doctors'))
 
     departments = Department.query.all()
     return render_template('admin/doctor/update.html', doctor=doctor, departments=departments)
@@ -206,7 +209,7 @@ def search_doctors():
     return render_template('admin/doctor/doctors.html', results=filtered_doctors, query=query)
 
 
-#-------------------PATIENT--------------------------------------------------------------------------------------------------
+# -------------------PATIENT--------------------------------------------------------------------------------------------------
 
 # patient control
 @admin.route('/view_patients')
@@ -217,7 +220,10 @@ def view_patients():
     return render_template('admin/patient/patients.html', patients=patients)
 
 # update patient
-@admin.route('/update_patient/<int:id>', methods=['GET', 'POST'])  # Added methods=['GET', 'POST']
+
+
+# Added methods=['GET', 'POST']
+@admin.route('/update_patient/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_patient(id):
     check_user_role('admin')
@@ -257,6 +263,8 @@ def update_patient(id):
     return render_template('admin/patient/update.html', patient=patient)
 
 # delete patient
+
+
 @admin.route('/delete_patient/<int:id>')
 @login_required
 def delete_patient(id):
@@ -273,6 +281,8 @@ def delete_patient(id):
     return redirect(url_for('admin.view_patients'))
 
 # search/filter patient
+
+
 @admin.route('/search_patients')
 @login_required
 def search_patients():
@@ -288,14 +298,26 @@ def search_patients():
     return render_template('admin/patient/patients.html', results=results, query=query, patients=patients)
 
 # appointment table
+
+
 @admin.route('/view_appointments')
 @login_required
 def view_appointments():
     check_user_role('admin')
 
-    appointments = Appointment.query.options(
-        db.joinedload(Appointment.patient),
-        db.joinedload(Appointment.doctor).joinedload(User.specialization)
-    ).order_by(Appointment.created_at.desc()).all()
+    sort_by = request.args.get('sort', '').lower()
+    query = Appointment.query
 
-    return render_template('admin/appointment/appointments.html', appointments=appointments)
+    if sort_by == 'booked':
+        query = query.filter_by(status='Booked')
+    elif sort_by == 'completed':
+        query = query.filter_by(status='Completed')
+    elif sort_by == 'cancelled':
+        query = query.filter_by(status='Cancelled')
+
+    appointments = query.order_by(
+        Appointment.appointment_datetime.desc()).all()
+
+    return render_template('admin/appointment/appointments.html',
+                           appointments=appointments,
+                           current_sort=sort_by)

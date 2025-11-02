@@ -1,4 +1,10 @@
-<h2>Book Appointment with Dr. {{ doctor.name }}</h2>
+{% extends "base.html" %} 
+
+
+{% block main %}
+
+
+<h2>Book Appointment with Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h2>
 
 <form method="POST">
   <label for="appointment_datetime">Select Date & Time:</label>
@@ -21,3 +27,6 @@
 
   <button type="submit" class="btn btn-primary mt-3">Book Appointment</button>
 </form>
+
+
+{% endblock %}

@@ -1,13 +1,9 @@
 {% extends "base.html" %}
 
-
 {% block main %}
-
-<h2>Profile</h2>
-
 <div class="card mt-3">
   <div class="card-body">
-    <h3 class="card-title mb-3">{{ current_user.first_name }} {{ current_user.last_name }}</h3>
+    <h3 class="card-title mb-3">Dr. {{ current_user.first_name }} {{ current_user.last_name }}</h3>
 
     <dl class="row">
       <dt class="col-sm-3">Email</dt>
@@ -15,6 +11,12 @@
 
       <dt class="col-sm-3">Contact</dt>
       <dd class="col-sm-9">{{ current_user.contact_number or '—' }}</dd>
+
+      <dt class="col-sm-3">Specialization</dt>
+      <dd class="col-sm-9">{{ current_user.specialization.name or '—' }}</dd>
+
+      <dt class="col-sm-3">Qualification</dt>
+      <dd class="col-sm-9">{{ current_user.qualification or '—' }}</dd>
 
       <dt class="col-sm-3">Gender</dt>
       <dd class="col-sm-9">{{ current_user.gender or '—' }}</dd>
@@ -28,12 +30,11 @@
       <dt class="col-sm-3">Joined</dt>
       <dd class="col-sm-9">{{ current_user.created_at.strftime('%d-%m-%Y') }}</dd>
 
-
+      <dt class="col-sm-3">Total Appointments</dt>
+      <dd class="col-sm-9">{{ total_appointments }}</dd>
     </dl>
 
-<a href="{{url_for('patient.update_profile')}}" class="btn btn-secondary">
-    Update Profile
-</a>
+
   </div>
 </div>
 

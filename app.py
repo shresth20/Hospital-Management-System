@@ -51,7 +51,7 @@ app = create_app()
 
 # Home for all users
 @app.route('/')
-def home():
+def landing_page():
     return render_template('home.html') 
 
 

@@ -1,8 +1,9 @@
-<h1>Doctor Dashboard</h1>
-<div class="mb-3">
-    <h3>Welcome Dr. {{current_user.first_name}} {{current_user.last_name}}, specialization in
-        {{current_user.specialization.name}}</h3>
-</div>
+{% extends "base.html" %}
+
+
+{% block main %}
+
+<h2>Doctor Dashboard</h2>
 
 
 
@@ -50,12 +51,6 @@
 {% endif %}
 
 
-<nav>
-    <a href="{{ url_for('doctor.availability') }}">Manage Availability</a><br>
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
-</nav>
-
-
 <h2 class="mb-3">Past Appointments</h2>
 
 <div class="table-responsive">
@@ -84,6 +79,5 @@
     </table>
 </div>
 
-<h2>Dashboard Statistics</h2>
 
-<img src="data:image/png;base64,{{ chart }}" class="img-fluid rounded shadow-sm">
+{% endblock %}

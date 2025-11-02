@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 doctor = Blueprint('doctor', __name__)
 
 # doctor dashboard
+
+
 @doctor.route('/')
 @login_required
 def dashboard():
@@ -34,12 +36,19 @@ def dashboard():
             Appointment.doctor_id == current_user.id,
             Appointment.status != 'Booked',
             Appointment.appointment_datetime.between(datetime.now(), datetime.combine(next_week, datetime.max.time())
-            )
+                                                     )
         )
         .order_by(Appointment.appointment_datetime.desc())
         .all()
     )
 
+    return render_template('doctor/dashboard.html', appointments=appointments,  past_appointments=past_appt)
+
+
+@doctor.route('/stats')
+@login_required
+def stats():
+    check_user_role('doctor')
 
     # Chart
     appts = (
@@ -51,14 +60,25 @@ def dashboard():
         day = appt.appointment_datetime.strftime('%A')
         day_counts[day] = day_counts.get(day, 0) + 1
 
-    plt.figure(figsize=(5,3))
+    plt.figure(figsize=(5, 3))
     plt.bar(day_counts.keys(), day_counts.values(), color='orange')
     plt.title("Weekly Appointment Load")
     plt.xlabel("Day")
     plt.ylabel("Appointments")
     chart = plot_to_img()
 
-    return render_template('doctor/dashboard.html', appointments=appointments,  past_appointments=past_appt, chart=chart)
+    return render_template('doctor/statistics.html', chart=chart)
+
+
+@doctor.route('/profile')
+@login_required
+def profile():
+    check_user_role('doctor')
+    total_appointments = Appointment.query.filter_by(
+        doctor_id=current_user.id).count()
+
+    return render_template('doctor/profile.html',  total_appointments=total_appointments)
+
 
 # update appointment status
 @doctor.route('/appointment/update_status/<int:id>', methods=['POST'])
@@ -69,7 +89,7 @@ def update_status(id):
     appointment = Appointment.query.get_or_404(id)
     if appointment.doctor_id != current_user.id:
         flash('Not authorized.', 'danger')
-        
+
     else:
         status = request.form.get('status')
         if status in ['Completed', 'Cancelled']:
@@ -92,7 +112,7 @@ def treatment(id):
     if appointment.doctor_id != current_user.id:
         flash('Not authorized.', 'danger')
         return redirect(url_for('doctor.dashboard'))
-    
+
     if appointment.status != 'Booked':
         flash('Can only treat booked appointments.', 'warning')
         return redirect(url_for('doctor.dashboard'))
@@ -120,6 +140,8 @@ def treatment(id):
     return render_template('doctor/treatment.html', appointment=appointment)
 
 # patient history
+
+
 @doctor.route('/patient_history/<int:id>')
 @login_required
 def patient_history(id):
@@ -135,6 +157,8 @@ def patient_history(id):
     return render_template('doctor/patient_history.html', patient=patient, history=history)
 
 # doctor manage his availability
+
+
 @doctor.route('/availability', methods=['GET', 'POST'])
 @login_required
 def availability():
@@ -142,8 +166,10 @@ def availability():
 
     if request.method == 'POST':
         try:
-            available_date = datetime.strptime(request.form['available_date'], '%Y-%m-%d').date()
-            start = datetime.strptime(request.form['start_time'], '%H:%M').time()
+            available_date = datetime.strptime(
+                request.form['available_date'], '%Y-%m-%d').date()
+            start = datetime.strptime(
+                request.form['start_time'], '%H:%M').time()
             end = datetime.strptime(request.form['end_time'], '%H:%M').time()
 
             if start >= end:
@@ -181,6 +207,8 @@ def availability():
     return render_template('doctor/manage_availability.html', slots=slots)
 
 # delete availability
+
+
 @doctor.route('/delete_availability/<int:id>', methods=['POST'])
 @login_required
 def delete_availability(id):

@@ -1,3 +1,9 @@
+{% extends "base.html" %} 
+
+
+{% block main %}
+
+
 <h1>Treatment Form</h1>
 
 <h3 class="mb-3">Add Treatment - {{ appointment.patient.first_name }}</h3>
@@ -18,3 +24,5 @@
     <button class="btn btn-success">Save Treatment</button>
     <a href="{{ url_for('doctor.dashboard') }}" class="btn btn-secondary">Cancel</a>
 </form>
+
+{% endblock %}

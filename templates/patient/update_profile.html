@@ -1,0 +1,55 @@
+{% extends "base.html" %} 
+
+
+{% block main %}
+
+
+
+
+<h1>Update Profile</h1>
+
+<form method="POST">
+    <div>
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" value="{{ current_user.first_name }}" required>
+    </div>
+    
+    <div>
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" value="{{ current_user.last_name }}" required>
+    </div>
+    
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+    </div>
+    
+    <div>
+        <label for="contact_number">Contact Number:</label>
+        <input type="tel" id="contact_number" name="contact_number" value="{{ current_user.contact_number or '' }}">
+    </div>
+    
+    <div>
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="">Select Gender</option>
+            <option value="Male" {% if current_user.gender == 'Male' %}selected{% endif %}>Male</option>
+            <option value="Female" {% if current_user.gender == 'Female' %}selected{% endif %}>Female</option>
+            <option value="Other" {% if current_user.gender == 'Other' %}selected{% endif %}>Other</option>
+        </select>
+    </div>
+    
+    <div>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" value="{{ current_user.dob.strftime('%Y-%m-%d') if current_user.dob else '' }}">
+    </div>
+    
+    <div>
+        <label for="address">Address:</label>
+        <textarea id="address" name="address">{{ current_user.address or '' }}</textarea>
+    </div>
+    
+    <button type="submit">Update Profile</button>
+</form>
+
+{% endblock %}

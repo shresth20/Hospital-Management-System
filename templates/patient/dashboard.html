@@ -1,5 +1,10 @@
-<h1>Patient Dashboard</h1>
-<div class="mb-3"><h3>Welcome {{current_user.first_name}} {{current_user.last_name}}, Address: {{current_user.address}}</h3></div>
+{% extends "base.html" %} 
+
+
+{% block main %}
+
+
+<h2>Patient Dashboard</h2><br>
 
 <h3>Upcoming Appointments</h3>
 <ul>
@@ -26,14 +31,5 @@
     <li>No past appointments.</li>
   {% endfor %}
 </ul>
-<a href="{{url_for('patient.find_doctors')}}">Find Doctor</a><br>
 
-<nav>
-    <a href="{{ url_for('patient.update_profile') }}">Update Profile</a><br>
-    <a href="{{ url_for('auth.logout') }}">Logout</a>
-</nav>
-
-<h2>Dashboard Statistics</h2>
-<img src="data:image/png;base64,{{ chart }}" class="img-fluid rounded shadow-sm">
-
-
+{% endblock %}

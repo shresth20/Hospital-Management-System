@@ -1,23 +1,14 @@
-<h1>Admin Dashboard</h1>
+{% extends "base.html" %}
 
-<a href="{{url_for('admin.view_patients')}}">View Patients</a><br>
-<a href="{{url_for('admin.view_doctors')}}">View Doctors</a><br>
-<a href="{{url_for('admin.register_doctor')}}">Register New Doctor</a><br>
-<a href="{{url_for('admin.view_appointments')}}">View Appointments</a>
-<a href="{{url_for('auth.logout')}}">Logout</a>
-<br>
 
-<h2>Dashboard Statistics</h2>
+{% block main %}
 
-<div class="charts-container">
-    <div>{{ chart_overview|safe }}</div>
-    <div>{{ chart_status_pie|safe }}</div>
-    <div>{{ chart_age_hist|safe }}</div>
-</div>
+
+
 
 
 <div class="container mt-5">
-  <h2 class="text-center mb-4">Admin Dashboard</h2>
+  <h2 >Admin Dashboard</h2><br>
 
   <div class="row text-center mb-4">
     <div class="col-md-4">
@@ -48,5 +39,7 @@
       <img src="data:image/png;base64,{{ spec_chart }}" class="img-fluid shadow-sm rounded">
     </div>
   </div>
+
 </div>
 
+{% endblock %}

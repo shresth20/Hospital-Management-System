@@ -1,7 +1,12 @@
-<h1>Patients Data</h1>
+{% extends "base.html" %} 
+
+
+{% block main %}
+
+<h2>Patients Data</h2><br>
 
 <div class="">
-    <h2>Search Patients</h2>
+    <h4>Search Patients</h4>
     <form method="get" action="{{ url_for('admin.search_patients') }}">
         <input type="text" name="search" placeholder="Search by name or email" value="{{ query }}">
         <button type="submit">Search</button>
@@ -57,3 +62,5 @@
         </tbody>
     </table>
 </div>
+
+{% endblock %}
