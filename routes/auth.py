@@ -58,34 +58,46 @@ def login():
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
-        email = request.form.get('email')
-        # check if patient email already exists
-        if User.query.filter_by(email=email).first():
-            flash('A user with this email already exists.', 'warning')
+        try:
+            email = request.form.get('email')
+            # check if patient email already exists
+            if User.query.filter_by(email=email).first():
+                flash('A user with this email already exists.', 'warning')
+                return redirect(url_for('auth.register'))
+
+            hashed_password = bcrypt.generate_password_hash(
+                request.form.get('password')).decode('utf-8')
+            
+            dob_str = request.form.get('dob')
+            try:
+                dob = datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None
+            except ValueError:
+                flash('Invalid date format. Please use YYYY-MM-DD', 'warning')
+                return redirect(url_for('auth.register'))
+
+            new_patient = User(
+                email=email,
+                password=hashed_password,
+                first_name=request.form.get('first_name'),
+                last_name=request.form.get('last_name'),
+                role='patient',
+                contact_number=request.form.get('contact_number'),
+                dob=dob,
+                gender=request.form.get('gender'),
+                address=request.form.get('address')
+            )
+            db.session.add(new_patient)
+            db.session.commit()
+
+            # Log in the new user automatically
+            login_user(new_patient)
+            flash('Your account has been created successfully!', 'success')
+            return redirect(url_for('patient.dashboard'))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error creating account: {str(e)}', 'danger')
             return redirect(url_for('auth.register'))
-
-        hashed_password = bcrypt.generate_password_hash(
-            request.form.get('password')).decode('utf-8')
-        
-        dob_str = request.form.get('dob')
-        dob = datetime.strptime(dob_str, '%Y-%m-%d').date() if dob_str else None
-
-        new_patient = User(
-            email=email,
-            password=hashed_password,
-            first_name=request.form.get('first_name'),
-            last_name=request.form.get('last_name'),
-            role='patient',
-            contact_number = request.form.get('contact_number'),
-            dob=dob,
-            gender = request.form.get('gender'),
-            address = request.form.get('address')
-        )
-        db.session.add(new_patient)
-        db.session.commit()
-
-        flash('Your account has been created! You are now able to login.', 'success')
-        return redirect(url_for('auth.login'))
 
     return render_template('auth/register.html')
 
