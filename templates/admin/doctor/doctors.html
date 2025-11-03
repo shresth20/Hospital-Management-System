@@ -19,18 +19,29 @@
     </form>
 
     {% if results %}
-    <table>
+    <table border="solid">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Specialization</th>
+                <th>Doctor Name</th>
+                <th>Qualification</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Registered at</th>
+                <th>Operation</th>
             </tr>
         </thead>
         <tbody>
-            {% for result in results %}
+            {% for doctor in results %}
             <tr>
-                <td>{{ result.first_name }} {{ result.last_name }}</td>
-                <td>{{ result.qualification }}</td>
+                <td>{{ doctor.first_name }} {{ doctor.last_name }}</td>
+                <td>{{ doctor.qualification }}</td>
+                <td>{{ doctor.email }}</td>
+                <td>{{ doctor.contact_number }}</td>
+                <td>{{ doctor.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+                <td>
+                    <a class="btn btn-primary" href="{{ url_for('admin.update_doctor', id=doctor.id) }}">Update</a>
+                    <a class="btn btn-danger" href="{{ url_for('admin.delete_doctor', id=doctor.id) }}">Delete</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
@@ -63,7 +74,7 @@
                     <a class="btn btn-primary" href="{{ url_for('admin.update_doctor', id=doctor.id) }}">Update</a>
                     <a class="btn btn-danger" href="{{ url_for('admin.delete_doctor', id=doctor.id) }}">Delete</a>
                 </td>
-            </tr>.
+            </tr>
             {% endfor %}
         </tbody>
     </table>

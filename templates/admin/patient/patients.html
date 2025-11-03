@@ -13,20 +13,27 @@
     </form>
 
     {% if results %}
-    <table>
+  <table border="solid">
         <thead>
             <tr>
-                <th>Name</th>
+                <th>Patient Name</th>
                 <th>Email</th>
                 <th>Contact</th>
+                <th>Registered at</th>
+                <th>Operation</th>
             </tr>
         </thead>
         <tbody>
             {% for patient in results %}
             <tr>
                 <td>{{ patient.first_name }} {{ patient.last_name }}</td>
-                <td>{{ patient.email }}</td>
-                <td>{{ patient.contact_number }}</td>
+                <td> {{ patient.email }} </td>
+                <td> {{ patient.contact_number }} </td>
+                <td> {{ patient.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
+                <td>
+                    <a class="btn btn-primary" href="{{ url_for('admin.update_patient', id=patient.id) }}">Update</a>
+                    <a class="btn btn-danger" href="{{ url_for('admin.delete_patient', id=patient.id) }}">Delete</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
