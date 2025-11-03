@@ -67,7 +67,7 @@
             {% for appt in past_appointments %}
             <tr>
                 <td>{{ appt.appointment_datetime.strftime('%d-%b-%Y %I:%M %p') }}</td>
-                <td>{{ appt.patient.first_name }}</td>
+                <td>{{ appt.patient.first_name }} {{ appt.patient.last_name }}</td>
                 <td>{{ appt.status }}</td>
 
                 <td> <a href="{{ url_for('doctor.patient_history', id=appt.patient.id) }}" class="btn btn-primary">Patient History</a>

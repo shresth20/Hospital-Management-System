@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 
 admin = Blueprint('admin', __name__)
 
-
 @admin.route('/')
 @login_required
 def dashboard():

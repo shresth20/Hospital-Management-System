@@ -141,8 +141,6 @@ def treatment(id):
     return render_template('doctor/treatment.html', appointment=appointment,  patient_age=age)
 
 # patient history
-
-
 @doctor.route('/patient_history/<int:id>')
 @login_required
 def patient_history(id):
