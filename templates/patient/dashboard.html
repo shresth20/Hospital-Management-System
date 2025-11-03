@@ -11,7 +11,7 @@
   {% for appt in upcoming %}
     <li>{{ appt.appointment_datetime.strftime('%d %b %Y, %I:%M %p') }} with Dr. {{ appt.doctor.first_name }}
       <form method="POST" action="{{ url_for('patient.cancel_appointment', id=appt.id) }}">
-        <button type="submit">Cancel</button>
+        <button class="btn btn-danger" type="submit">Cancel</button>
       </form>
     </li>
   {% else %}
@@ -22,9 +22,9 @@
 <h3>Past Appointments</h3>
 <ul>
   {% for appt in past %}
-    <li>{{ appt.appointment_datetime.strftime('%d %b %Y, %I:%M %p') }} — {{ appt.status }}
+    <li>{{ appt.appointment_datetime.strftime('%d %b %Y, %I:%M %p') }} with Dr. {{ appt.doctor.first_name }} — {{ appt.status }}
       {% if appt.status == 'Completed' %}
-      <a href="{{ url_for('patient.view_treatment', id=appt.id) }}"> View</a>
+      <a class="btn btn-primary" href="{{ url_for('patient.view_treatment', id=appt.id) }}"> View</a>
       {% endif %}
     </li>
   {% else %}

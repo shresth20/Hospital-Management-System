@@ -58,10 +58,10 @@
                 <td>{{ doctor.qualification }}</td>
                 <td>{{ doctor.email }}</td>
                 <td>{{ doctor.contact_number }}</td>
-                <td>{{ doctor.created_at }}</td>
+                <td>{{ doctor.created_at.strftime('%d %b %Y, %I:%M %p') }}</td>
                 <td>
-                    <a href="{{ url_for('admin.update_doctor', id=doctor.id) }}">Update</a>
-                    <a href="{{ url_for('admin.delete_doctor', id=doctor.id) }}">Delete</a>
+                    <a class="btn btn-primary" href="{{ url_for('admin.update_doctor', id=doctor.id) }}">Update</a>
+                    <a class="btn btn-danger" href="{{ url_for('admin.delete_doctor', id=doctor.id) }}">Delete</a>
                 </td>
             </tr>.
             {% endfor %}

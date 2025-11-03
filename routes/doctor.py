@@ -18,14 +18,10 @@ doctor = Blueprint('doctor', __name__)
 def dashboard():
     check_user_role('doctor')
 
-    today, next_week = date.today(), date.today()+timedelta(days=7)
     appointments = (
         Appointment.query.filter(
             Appointment.doctor_id == current_user.id,
             Appointment.status == 'Booked',
-            Appointment.appointment_datetime.between(
-                datetime.now(), datetime.combine(next_week, datetime.max.time())
-            )
         )
         .order_by(Appointment.appointment_datetime.asc())
         .all()
@@ -35,8 +31,6 @@ def dashboard():
         Appointment.query.filter(
             Appointment.doctor_id == current_user.id,
             Appointment.status != 'Booked',
-            Appointment.appointment_datetime.between(datetime.now(), datetime.combine(next_week, datetime.max.time())
-                                                     )
         )
         .order_by(Appointment.appointment_datetime.desc())
         .all()
@@ -109,6 +103,10 @@ def treatment(id):
 
     appointment = Appointment.query.get_or_404(id)
 
+    today = date.today()
+    dob = appointment.patient.dob
+    age =  today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+
     if appointment.doctor_id != current_user.id:
         flash('Not authorized.', 'danger')
         return redirect(url_for('doctor.dashboard'))
@@ -116,6 +114,7 @@ def treatment(id):
     if appointment.status != 'Booked':
         flash('Can only treat booked appointments.', 'warning')
         return redirect(url_for('doctor.dashboard'))
+    
 
     if request.method == 'POST':
         diagnosis = request.form.get('diagnosis')
@@ -136,8 +135,10 @@ def treatment(id):
 
         flash('Treatment saved. Appointment completed.', 'success')
         return redirect(url_for('doctor.dashboard'))
+    
 
-    return render_template('doctor/treatment.html', appointment=appointment)
+
+    return render_template('doctor/treatment.html', appointment=appointment,  patient_age=age)
 
 # patient history
 

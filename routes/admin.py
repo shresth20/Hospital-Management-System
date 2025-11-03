@@ -35,10 +35,20 @@ def dashboard():
 
     # Patient age distribution
     patients = User.query.filter_by(role='patient').all()
+    from datetime import date as _date
     ages = []
     for p in patients:
-        if hasattr(p, 'age') and p.age:
-            ages.append(p.age)
+        dob = getattr(p, 'dob', None)
+        if not dob:
+            continue
+        try:
+            dob_date = dob if isinstance(dob, _date) else dob.date()
+            today = _date.today()
+            age = today.year - dob_date.year - ((today.month, today.day) < (dob_date.month, dob_date.day))
+            if age >= 0:
+                ages.append(age)
+        except Exception:
+            continue
 
     plt.figure(figsize=(5, 3))
     plt.hist(ages, bins=5, color='skyblue', edgecolor='black')
@@ -51,7 +61,6 @@ def dashboard():
     spec_counts = {}
     for d in doctors:
         spec = getattr(d, 'specialization', None)
-        # prefer a readable name for the specialization; fallback to "Unknown"
         spec_name = spec.name if spec and hasattr(
             spec, 'name') else (str(spec) if spec else 'Unknown')
         spec_counts[spec_name] = spec_counts.get(spec_name, 0) + 1
@@ -298,8 +307,6 @@ def search_patients():
     return render_template('admin/patient/patients.html', results=results, query=query, patients=patients)
 
 # appointment table
-
-
 @admin.route('/view_appointments')
 @login_required
 def view_appointments():

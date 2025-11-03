@@ -1,12 +1,31 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
 
 
 {% block main %}
 
 
-<h1>Treatment Form</h1>
 
-<h3 class="mb-3">Add Treatment - {{ appointment.patient.first_name }}</h3>
+<h2>Treatment Form</h2><br>
+
+
+<h4>Patient:</h4>
+<dl class="row">
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">{{ appointment.patient.first_name }} {{ appointment.patient.last_name }}</dd>
+    <dt class="col-sm-3">Gender</dt>
+    <dd class="col-sm-9">{{ appointment.patient.gender or '—' }}</dd>
+
+    <dt class="col-sm-3">Age</dt>
+    <dd class="col-sm-9">{{ patient_age }}</dd>
+
+    <dt class="col-sm-3">Reason</dt>
+    <dd class="col-sm-9">{{ appointment.reason }}</dd>
+
+
+</dl>
+
+
+<h4 class="mb-3">Add Treatment - {{ appointment.patient.first_name }}</h4>
 
 <form method="POST">
     <div class="mb-3">

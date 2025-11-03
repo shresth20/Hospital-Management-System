@@ -17,7 +17,7 @@
 <ul>
   {% for doctor in doctors %}
     <li>Dr. {{ doctor.first_name }} {{ doctor.last_name }}, {{ doctor.qualification }}, Specialist of {{doctor.specialization.name}}({{doctor.specialization.description}})
-      <a href="{{ url_for('patient.book_appointment', doctor_id=doctor.id) }}">Book</a>
+      <a class="btn btn-primary" href="{{ url_for('patient.book_appointment', doctor_id=doctor.id) }}">Book</a>
     </li>
   {% else %}
     <li>No doctors found.</li>

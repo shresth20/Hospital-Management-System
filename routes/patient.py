@@ -5,7 +5,7 @@ from datetime import date, timedelta, datetime
 import math
 
 from routes.auth import check_user_role
-from models import db, User, Appointment, DoctorAvailability
+from models import db, User, Appointment, DoctorAvailability, Department
 
 from chart import plot_to_img
 import matplotlib.pyplot as plt
@@ -13,16 +13,14 @@ import matplotlib.pyplot as plt
 patient = Blueprint('patient', __name__)
 
 # patient dashbaord
-
-
 @patient.route('/')
 @login_required
 def dashboard():
     check_user_role('patient')
+    
     upcoming = Appointment.query.filter(
         Appointment.patient_id == current_user.id,
         Appointment.status == 'Booked',
-        Appointment.appointment_datetime >= datetime.now()
     ).order_by(Appointment.appointment_datetime.asc()).all()
 
     past = Appointment.query.filter(
@@ -71,8 +69,6 @@ def stats():
     return render_template('patient/statistics.html' , chart=pie_img)
 
 # view profile
-
-
 @patient.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
@@ -124,11 +120,13 @@ def find_doctors():
     query = request.args.get('search', '').strip()
 
     if query:
-        filtered_doctors = User.query.filter(
+        filtered_doctors = User.query.join(Department, User.specialization_id == Department.id).filter(
             User.role == 'doctor',
             (
                 func.concat(User.first_name, ' ', User.last_name).ilike(f"%{query}%") |
-                User.qualification.ilike(f"%{query}%")
+                User.qualification.ilike(f"%{query}%") |
+                Department.description.ilike(f"%{query}%") |
+                Department.name.ilike(f"%{query}%") 
             )
         ).all()
         print(filtered_doctors)
@@ -138,8 +136,6 @@ def find_doctors():
     return render_template('patient/find_doctors.html', doctors=filtered_doctors, query=query)
 
 # booking appointment
-
-
 @patient.route('/book_appointment/<int:doctor_id>', methods=['GET', 'POST'])
 @login_required
 def book_appointment(doctor_id):

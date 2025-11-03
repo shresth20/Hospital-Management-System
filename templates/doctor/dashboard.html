@@ -25,7 +25,7 @@
             {% for appt in appointments %}
             <tr>
                 <td>{{ appt.appointment_datetime.strftime('%d-%b-%Y %I:%M %p') }}</td>
-                <td>{{ appt.patient.first_name }}</td>
+                <td>{{ appt.patient.first_name }} {{ appt.patient.last_name }}</td>
                 <td>{{ appt.status }}</td>
                 <td>
                     <form action="{{ url_for('doctor.update_status', id=appt.id) }}" method="POST" class="d-inline">
@@ -34,11 +34,11 @@
                             <option value="Completed">Completed</option>
                             <option value="Cancelled">Cancelled</option>
                         </select>
-                        <button class="">✔</button>
+                        <button class="btn btn-success">Submit</button>
                     </form>
-                    <a href="{{ url_for('doctor.treatment', id=appt.id) }}" class="">Add Treatment</a>
+                    <a href="{{ url_for('doctor.treatment', id=appt.id) }}" class="btn btn-primary">Add Treatment</a>
                 </td>
-                <td> <a href="{{ url_for('doctor.patient_history', id=appt.patient.id) }}" class="">Patient History</a>
+                <td> <a href="{{ url_for('doctor.patient_history', id=appt.patient.id) }}" class="btn btn-primary">Patient History</a>
                 </td>
 
             </tr>
@@ -70,7 +70,7 @@
                 <td>{{ appt.patient.first_name }}</td>
                 <td>{{ appt.status }}</td>
 
-                <td> <a href="{{ url_for('doctor.patient_history', id=appt.patient.id) }}" class="">Patient History</a>
+                <td> <a href="{{ url_for('doctor.patient_history', id=appt.patient.id) }}" class="btn btn-primary">Patient History</a>
                 </td>
 
             </tr>
