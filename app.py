@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template
 from flask_login import LoginManager
 
 from models import db, User
@@ -40,7 +40,7 @@ def create_app():
 
 
 
-    # create tables if they don't exist
+    # create db tables if they don't exist
     with app.app_context():  
         db.create_all()
         print('Database Created Successfully !!')

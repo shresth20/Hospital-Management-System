@@ -96,8 +96,6 @@ def view_doctors():
     return render_template('admin/doctor/doctors.html', doctors=doctors)
 
 # register doctor
-
-
 @admin.route('/register_doctor', methods=['GET', 'POST'])
 @login_required
 def register_doctor():
@@ -224,13 +222,10 @@ def search_doctors():
 @login_required
 def view_patients():
     check_user_role('admin')
-    patients = User.query.filter_by(role='patient').all()
+    patients = User.query.filter_by(role='patient').order_by(User.first_name).all()
     return render_template('admin/patient/patients.html', patients=patients)
 
-# update patient
-
-
-# Added methods=['GET', 'POST']
+# update patien
 @admin.route('/update_patient/<int:id>', methods=['GET', 'POST'])
 @login_required
 def update_patient(id):
@@ -271,8 +266,6 @@ def update_patient(id):
     return render_template('admin/patient/update.html', patient=patient)
 
 # delete patient
-
-
 @admin.route('/delete_patient/<int:id>')
 @login_required
 def delete_patient(id):
@@ -289,8 +282,6 @@ def delete_patient(id):
     return redirect(url_for('admin.view_patients'))
 
 # search/filter patient
-
-
 @admin.route('/search_patients')
 @login_required
 def search_patients():

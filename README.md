@@ -228,11 +228,16 @@ hospital-management-system/
 │   │   └── register.html
 │   │
 │   ├── admin/
-│   │   ├── dashboard.html
-│   │   ├── doctors.html
-│   │   ├── patients.html
-│   │   ├── appointments.html
-│   │   └── stats.html
+|   |   ├── appointment/                  
+|   |   │   ├── appointment.html             
+|   |   ├── doctor/                 
+|   |   │   ├── doctors.html              
+|   |   │   ├── register.html           
+|   |   │   └── update.html            
+|   |   ├── patient/                  
+|   |   │   ├── patients.html            
+|   |   │   └── update.html              
+│   │   └── dashboard.html
 │   │
 │   ├── doctor/
 │   │   ├── dashboard.html

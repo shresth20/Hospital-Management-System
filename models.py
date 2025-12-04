@@ -112,3 +112,22 @@ class Treatment(db.Model):
 
     def __repr__(self):
         return f"<Treatment for Appointment {self.appointment_id}>"
+    
+# #  create new patient table
+# class Patient(db.Model):
+#     id = db.Column(db.Integer)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

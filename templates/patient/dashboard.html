@@ -24,7 +24,7 @@
   {% for appt in past %}
     <li>{{ appt.appointment_datetime.strftime('%d %b %Y, %I:%M %p') }} with Dr. {{ appt.doctor.first_name }} — {{ appt.status }}
       {% if appt.status == 'Completed' %}
-      <a class="btn btn-primary" href="{{ url_for('patient.view_treatment', id=appt.id) }}"> View</a>
+      <a class="btn btn-primary" href="{{ url_for('patient.view_treatment', id=appt.id) }}"> View Treatment</a>
       {% endif %}
     </li>
   {% else %}
